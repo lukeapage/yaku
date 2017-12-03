@@ -16,24 +16,6 @@ var map = {
         return Promise;
     },
 
-    "yaku.core": function () {
-        var Promise = require("../src/yaku.core");
-        map["yaku.core"].optionalHelper = "✓";
-        map["yaku.core"].coverage = "100% 100%";
-        map["yaku.core"].helper = propSize(Promise) + propSize(Promise.prototype) + propSize(require("../src/utils"));
-        setSize("yaku.core", "dist/yaku.core.min.js");
-        return Promise;
-    },
-
-    "yaku.aplus": function () {
-        var Promise = require("../src/yaku.aplus");
-        map["yaku.aplus"].optionalHelper = "✓";
-        map["yaku.aplus"].coverage = "100% 100%";
-        map["yaku.aplus"].helper = propSize(Promise) + propSize(Promise.prototype);
-        setSize("yaku.aplus", "dist/yaku.aplus.min.js");
-        return Promise;
-    },
-
     bluebird: function () {
         var Promise = require("bluebird");
         map.bluebird.optionalHelper = "partial";

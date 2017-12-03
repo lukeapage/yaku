@@ -1,7 +1,7 @@
 {
-  "name": "yaku",
+  "name": "yaku-mock",
   "version": "0.18.5",
-  "description": "A lightweight promise library",
+  "description": "Yaku with mock promise flush support",
   "main": "lib/yaku.js",
   "typings": "lib/yaku.d.ts",
   "scripts": {
@@ -11,29 +11,21 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/ysmood/yaku.git"
+    "url": "https://github.com/lukeapage/yaku-mock"
   },
   "keywords": [
-    "light-weight",
-    "es6",
+    "mock",
     "promise",
-    "performance",
     "promises",
     "promises-a",
-    "promises-aplus",
-    "async",
-    "await",
-    "deferred",
-    "deferreds",
-    "future",
-    "flow control"
+    "promises-aplus"
   ],
   "author": "http://ysmood.org",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/ysmood/yaku/issues"
+    "url": "https://github.com/lukeapage/yaku-mock/issues"
   },
-  "homepage": "https://github.com/ysmood/yaku",
+  "homepage": "https://github.com/lukeapage/yaku-mock",
   "files": [
     "lib",
     "dist/yaku.min.js",

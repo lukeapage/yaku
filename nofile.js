@@ -15,13 +15,11 @@ module.exports = function (task, option) {
 
     task("doc", ["code"], "build doc", function () {
         var size = zlib.gzipSync(kit.readFileSync("dist/yaku.min.js")).length / 1024;
-        var aplusSize = zlib.gzipSync(kit.readFileSync("dist/yaku.aplus.min.js")).length / 1024;
         return kit.warp("src/*.js")
         .load(kit.drives.comment2md({
             tpl: "docs/readme.jst.md",
             doc: {
                 size: size.toFixed(1),
-                aplusSize: aplusSize.toFixed(1)
             }
         })).run();
     });
@@ -43,8 +41,6 @@ module.exports = function (task, option) {
             kit.mkdirsSync("dist");
             return Promise.all([
                 kit.spawn("uglifyjs", ["-mc", "-o", "dist/yaku.min.js", "lib/yaku.js"]),
-                kit.spawn("uglifyjs", ["-mc", "-o", "dist/yaku.aplus.min.js", "lib/yaku.aplus.js"]),
-                kit.spawn("uglifyjs", ["-mc", "-o", "dist/yaku.core.min.js", "lib/yaku.core.js"])
             ]);
         });
     });

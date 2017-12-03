@@ -447,10 +447,6 @@
         return a instanceof b;
     }
 
-    function isError (obj) {
-        return isInstanceOf(obj, Err);
-    }
-
     function ensureType (obj, fn, msg) {
         if (!fn(obj)) throw genTypeError(msg);
     }
@@ -494,30 +490,37 @@
          * here, so that they can be execute on the next tick.
          * @private
          */
-        var fnQueue = Arr(initQueueSize)
-        , fnQueueLen = 0;
+        var fnQueue = {},
+            ident = 0;
 
         /**
          * Run all queued functions.
          * @private
          */
         function flush () {
-            var i = 0;
-            while (i < fnQueueLen) {
-                fn(fnQueue[i], fnQueue[i + 1]);
-                fnQueue[i++] = $undefined;
-                fnQueue[i++] = $undefined;
-            }
+            var keys = Object.keys(fnQueue);
 
-            fnQueueLen = 0;
-            if (fnQueue.length > initQueueSize) fnQueue.length = initQueueSize;
+            while(keys.length) {
+                for(var i = 0; i < keys.length; i++) {
+                    if (!fnQueue[keys[i]]) {
+                        continue;
+                    }
+                    var item = fnQueue[keys[i]];
+                    fnQueue[keys[i]] = $undefined;
+                    fn(item.v, item.arg);
+                }
+                keys = Object.keys(fnQueue);
+            }
+            ident = 0;
         }
 
-        return function (v, arg) {
-            fnQueue[fnQueueLen++] = v;
-            fnQueue[fnQueueLen++] = arg;
+        return {
+            queue: function (v, arg) {
+                fnQueue[String(ident++)] = { v: v, arg: arg };
 
-            if (fnQueueLen === 2) Yaku.nextTick(flush);
+                Yaku.nextTick(flush);
+            },
+            flush: flush,
         };
     }
 
@@ -586,7 +589,7 @@
      * @param {Yaku} p1
      * @param {Yaku} p2
      */
-    var scheduleHandler = genScheduler(999, function (p1, p2) {
+    var scheduler = genScheduler(999, function (p1, p2) {
         var x, handler;
 
         // 2.2.2
@@ -611,12 +614,8 @@
         settleWithX(p2, x);
     });
 
-    var scheduleUnhandledRejection = genScheduler(9, function (p) {
-        if (!hashOnRejected(p)) {
-            p[$unhandled] = 1;
-            emitEvent($unhandledRejection, p);
-        }
-    });
+    var scheduleHandler = scheduler.queue;
+    Yaku.flush = scheduler.flush;
 
     function emitEvent (name, p) {
         var browserEventName = "on" + name.toLowerCase()
@@ -703,24 +702,6 @@
         return p2;
     }
 
-    // iterate tree
-    function hashOnRejected (node) {
-        // A node shouldn't be checked twice.
-        if (node._umark)
-            return true;
-        else
-            node._umark = true;
-
-        var i = 0
-        , len = node._c
-        , child;
-
-        while (i < len) {
-            child = node[i++];
-            if (child._onRejected || hashOnRejected(child)) return true;
-        }
-    }
-
     function genStackInfo (reason, p) {
         var stackInfo = [];
 
@@ -769,14 +750,6 @@
             // 2.1.1.1
             p._s = state;
             p._v = value;
-
-            if (state === $rejected) {
-                if (isLongStackTrace && isError(value)) {
-                    value.longStack = genStackInfo(value, p);
-                }
-
-                scheduleUnhandledRejection(p);
-            }
 
             // 2.2.4
             while (i < len) {
