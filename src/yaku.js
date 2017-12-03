@@ -506,7 +506,7 @@
                         continue;
                     }
                     var item = fnQueue[keys[i]];
-                    fnQueue[keys[i]] = $undefined;
+                    delete fnQueue[keys[i]];
                     fn(item.v, item.arg);
                 }
                 keys = Object.keys(fnQueue);

@@ -1,6 +1,6 @@
 {
   "name": "yaku-mock",
-  "version": "0.18.5",
+  "version": "0.18.6",
   "description": "Yaku with mock promise flush support",
   "main": "lib/yaku.js",
   "typings": "lib/yaku.d.ts",
